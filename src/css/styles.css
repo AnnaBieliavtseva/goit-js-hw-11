@@ -1,0 +1,27 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.gallery {
+  max-width: 1280px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: -15px;
+}
+
+.photo-card {
+  display: inline-block;
+  flex-basis: calc(100% / 4 - 15px);
+  margin: 15px;
+}
+
+.info {
+  display: flex;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
