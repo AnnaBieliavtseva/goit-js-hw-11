@@ -4,21 +4,32 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 import Notiflix from 'notiflix';
 
+// import LoadMoreBtn from './loadMoreBtn';
+
 const axios = require('axios');
 
 const refs = {
   searchForm: document.querySelector('#search-form'),
   submitBtn: document.querySelector('btn[type=submit]'),
   gallery: document.querySelector('.gallery'),
+  // loadMoreBtn: document.querySelector('.load-more'),
 };
+
+// const loadMoreBtn = new LoadMoreBtn({
+//   selector: '.load-more',
+//   hidden: true,
+// });
+
+// console.log(loadMoreBtn);
 
 refs.searchForm.addEventListener('submit', onSearch);
 refs.gallery.addEventListener('click', onGalleryRefClick);
+// loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
 function onGalleryRefClick(event) {
   event.preventDefault();
 
-  let gallery = new SimpleLightbox('.gallery a', {
+  const lightBox = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
     captionDelay: 250,
   });
@@ -27,10 +38,15 @@ function onGalleryRefClick(event) {
 async function onSearch(event) {
   event.preventDefault();
   myGallery.searchQuery = event.target.elements.searchQuery.value;
-
+  clearGallery();
   const backendData = await myGallery.fetchPhotos();
-
+  myGallery.resetPage();
   onRenderGallery(backendData.data.hits);
+
+  if (!myGallery.searchQuery) {
+    clearGallery();
+    Notiflix.Notify.warning('Please write something');
+  }
 }
 
 function onRenderGallery(photos) {
@@ -70,18 +86,20 @@ function onRenderGallery(photos) {
       )
       .join('')
   );
+  // lightBox.refresh();
 }
 
 class Gallery {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
+    this.perPage = 40;
   }
 
   async fetchPhotos(photo) {
     try {
       const response = await axios.get(
-        `https://pixabay.com/api/?key=29882819-d1b2e59da7ad20757f8559035&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
+        `https://pixabay.com/api/?key=29882819-d1b2e59da7ad20757f8559035&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=${this.perPage}`
       );
       this.incrementPage();
       return response;
@@ -110,3 +128,12 @@ class Gallery {
   }
 }
 const myGallery = new Gallery();
+// async function onLoadMore() {
+//   const backendData = await myGallery.fetchPhotos();
+//   myGallery.fetchPhotos().then(onRenderGallery);
+//   onRenderGallery(backendData.data.hits);
+// }
+
+function clearGallery() {
+  refs.gallery.innerHTML = '';
+}

@@ -74,10 +74,25 @@ input {
   line-height: 35px;
   border: transparent;
 }
-/* 
-input:focus,
-input:hover {
-  input::placeholder {
-    background-color: #ffffff;
-  }
+
+/* input::placeholder {
+  backcolor: #ffffff;
 } */
+
+.load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  padding: 10px 15px;
+  width: 200px;
+  margin: 100px auto;
+  border-radius: 40px;
+  border-color: darkgrey;
+  font-weight: 500;
+}
+
+button.is-hidden {
+  display: none;
+}
