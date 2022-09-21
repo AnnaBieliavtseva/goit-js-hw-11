@@ -21,10 +21,7 @@ const loadMoreBtn = new LoadMoreBtn({
 
 const myGallery = new Gallery();
 
-const lightBox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionDelay: 250,
-});
+let lightBox = '';
 
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
@@ -56,6 +53,10 @@ async function onSearch(event) {
   } else {
     loadMoreBtn.show();
   }
+  lightBox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
+    captionDelay: 250,
+  });
 
   // myGallery.resetPage();
 }
@@ -96,7 +97,6 @@ ${likes}</b>
       )
       .join('')
   );
-  lightBox.refresh();
 }
 
 async function onLoadMore() {
@@ -110,6 +110,7 @@ async function onLoadMore() {
       "We're sorry, but you've reached the end of search results."
     );
   }
+  lightBox.refresh();
 }
 
 function clearGallery() {
