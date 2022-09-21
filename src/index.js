@@ -46,6 +46,7 @@ async function onSearch(event) {
     clearGallery();
     loadMoreBtn.hide();
     Notiflix.Notify.failure('Please write something');
+    myGallery.resetPage();
   } else if (backendData.data.total === 0) {
     clearGallery();
     loadMoreBtn.hide();
@@ -56,7 +57,7 @@ async function onSearch(event) {
     loadMoreBtn.show();
   }
 
-  myGallery.resetPage();
+  // myGallery.resetPage();
 }
 
 function onRenderGallery(photos) {
@@ -109,7 +110,6 @@ async function onLoadMore() {
       "We're sorry, but you've reached the end of search results."
     );
   }
-  myGallery.resetPage();
 }
 
 function clearGallery() {
