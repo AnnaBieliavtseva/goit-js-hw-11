@@ -30,6 +30,10 @@ img {
   background-color: rgb(133, 134, 192);
 }
 
+.is-hidden {
+  display: none;
+}
+
 .gallery {
   padding: 0;
   margin: -10px;

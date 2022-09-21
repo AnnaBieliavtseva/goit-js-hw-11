@@ -34,24 +34,26 @@ loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 async function onSearch(event) {
   event.preventDefault();
   clearGallery();
+  loadMoreBtn.hide();
   myGallery.searchQuery = event.target.elements.searchQuery.value.trim();
-  console.log(myGallery.searchQuery);
 
-  loadMoreBtn.show();
-  loadMoreBtn.dissable();
-  let backendData = await myGallery.fetchPhotos().then(loadMoreBtn.enable());
+  let backendData = await myGallery.fetchPhotos();
 
   onRenderGallery(backendData.data.hits);
+  loadMoreBtn.enable();
 
   if (myGallery.searchQuery.length <= 0) {
     clearGallery();
-    Notiflix.Notify.failure('Please write something');
     loadMoreBtn.hide();
+    Notiflix.Notify.failure('Please write something');
   } else if (backendData.data.total === 0) {
+    clearGallery();
+    loadMoreBtn.hide();
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
-    loadMoreBtn.hide();
+  } else {
+    loadMoreBtn.show();
   }
 
   myGallery.resetPage();
@@ -97,9 +99,8 @@ ${likes}</b>
 }
 
 async function onLoadMore() {
-  loadMoreBtn.dissable();
-  const backendData = await myGallery.fetchPhotos().then(loadMoreBtn.enable());
-  myGallery.fetchPhotos().then(onRenderGallery);
+  let backendData = await myGallery.fetchPhotos().then(loadMoreBtn.enable());
+
   onRenderGallery(backendData.data.hits);
 
   if (myGallery.page >= 13) {
@@ -108,6 +109,7 @@ async function onLoadMore() {
       "We're sorry, but you've reached the end of search results."
     );
   }
+  myGallery.resetPage();
 }
 
 function clearGallery() {
