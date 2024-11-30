@@ -1,6 +1,9 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 
@@ -22,8 +25,11 @@ function onSearch(evt) {
     return;
   }
   params.set('q', userQuery);
+  gallery.innerHTML = '';
+  // gallery.textContent = 'hhhhh'
   fetchApi();
   console.log(params.toString());
+ 
 }
 
 form.addEventListener('submit', onSearch);
@@ -39,6 +45,10 @@ function fetchApi() {
     .then(response => {
       if (response.hits.length) {
         gallery.insertAdjacentHTML('beforeend', createMarkup(response.hits));
+        new SimpleLightbox('.gallery a', {
+          captionsData: "alt",
+        });
+        gallery.refresh();
         console.log(response.hits);
         
       }
@@ -67,16 +77,18 @@ function createMarkup(arr) {
         downloads,
       }) =>
         `  <li  class="photo-card">
-          <a href="${largeImageURL} class="link">
-          <img src="${webformatURL}" alt="${tags}" width="300">
+          <a href="${largeImageURL}" class="link">
+          <img src="${webformatURL}" alt="${tags}" width="300" height="300">
           <div class="info">
-          <p>Likes: ${likes}</p>
-          <p>Views: ${views}</p>
-          <p>Comments: ${comments} </p>
-          <p>Downloads: ${downloads}</p>
+          <p class="info-item">Likes: <span class="card-text">${likes}</span></p>
+          <p class="info-item">Views: <span class="card-text">${views}</span></p>
+          <p class="info-item">Comments: <span class="card-text">${comments}</span></p>
+          <p class="info-item">Downloads: <span class="card-text">${downloads}</span></p>
           </div>
 </a>
         </li>`
     )
     .join('');
 }
+
+
