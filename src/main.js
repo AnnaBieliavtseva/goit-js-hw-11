@@ -6,6 +6,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
+const loader = document.querySelector('.thumb-loader')
 
 const API_KEY = '29882819-d1b2e59da7ad20757f8559035';
 let userQuery;
@@ -17,6 +18,8 @@ const params = new URLSearchParams({
   safesearch: true,
 });
 
+
+
 function onSearch(evt) {
   
   evt.preventDefault();
@@ -25,10 +28,18 @@ function onSearch(evt) {
     return;
   }
   params.set('q', userQuery);
+
   gallery.innerHTML = '';
-  // gallery.textContent = 'hhhhh'
-  fetchApi();
-  console.log(params.toString());
+  gallery.textContent = 'loader'
+  
+  setTimeout(() => {
+    gallery.textContent = '';
+     
+
+    fetchApi();
+    gallery.refresh();
+  }, 1000);
+
  
 }
 
@@ -47,8 +58,9 @@ function fetchApi() {
         gallery.insertAdjacentHTML('beforeend', createMarkup(response.hits));
         new SimpleLightbox('.gallery a', {
           captionsData: "alt",
+
         });
-        gallery.refresh();
+        
         console.log(response.hits);
         
       }
@@ -56,6 +68,7 @@ function fetchApi() {
         iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
+          position: 'topRight',
         });
       }
     })
@@ -76,16 +89,16 @@ function createMarkup(arr) {
         comments,
         downloads,
       }) =>
-        `  <li  class="photo-card">
+        `<li class="photo-card">
           <a href="${largeImageURL}" class="link">
-          <img src="${webformatURL}" alt="${tags}" width="300" height="300">
+<img src="${webformatURL}" alt="${tags}" height="250" width="350"/></a>
           <div class="info">
-          <p class="info-item">Likes: <span class="card-text">${likes}</span></p>
-          <p class="info-item">Views: <span class="card-text">${views}</span></p>
-          <p class="info-item">Comments: <span class="card-text">${comments}</span></p>
-          <p class="info-item">Downloads: <span class="card-text">${downloads}</span></p>
+          <p class="info-item">Likes: <b>${likes}</b></p>
+          <p class="info-item">Views: <b>${views}</b></p>
+          <p class="info-item">Comments: <b>${comments}</b></p>
+          <p class="info-item">Downloads:<b> ${downloads}</b></p>
           </div>
-</a>
+
         </li>`
     )
     .join('');
