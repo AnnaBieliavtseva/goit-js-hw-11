@@ -4,67 +4,45 @@ import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+import { fetchApi, params } from './js/pixabay-api.js';
+import createMarkup from './js/render-functions.js';
+
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
-const loader = document.querySelector('.thumb-loader')
+const loader = document.querySelector('.loader');
 
-const API_KEY = '29882819-d1b2e59da7ad20757f8559035';
-let userQuery;
-
-const params = new URLSearchParams({
-  key: API_KEY,
-  image_type: 'photo',
-  orientation: 'horizontal',
-  safesearch: true,
+let lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 300,
 });
 
+let userQuery;
 
+form.addEventListener('submit', onSearchForm);
 
-function onSearch(evt) {
-  
+function onSearchForm(evt) {
   evt.preventDefault();
   userQuery = evt.target.elements.searchQuery.value.trim();
-  if (userQuery === "") {
+  if (userQuery === '') {
+    iziToast.warning({
+      message:
+        'Please enter some data',
+      position: 'topRight',
+    });
     return;
   }
+
   params.set('q', userQuery);
 
   gallery.innerHTML = '';
-  gallery.textContent = 'loader'
-  
-  setTimeout(() => {
-    gallery.textContent = '';
-     
+  loader.classList.remove('hidden');
 
-    fetchApi();
-    gallery.refresh();
-  }, 1000);
-
- 
-}
-
-form.addEventListener('submit', onSearch);
-
-function fetchApi() {
-  fetch(`https://pixabay.com/api/?${params}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      return response.json();
-    })
+  fetchApi()
     .then(response => {
       if (response.hits.length) {
         gallery.insertAdjacentHTML('beforeend', createMarkup(response.hits));
-        new SimpleLightbox('.gallery a', {
-          captionsData: "alt",
-
-        });
-        
-        console.log(response.hits);
-        
-      }
-      else {
+        lightbox.refresh();
+      } else {
         iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
@@ -72,36 +50,11 @@ function fetchApi() {
         });
       }
     })
-    .catch(error => 
-        console.log(error)
-      );
+    .catch(error => console.log(error))
+    .finally(() => { 
+      evt.target.elements.searchQuery.value = ''
+       loader.classList.add('hidden');
+     });
+   
 }
-
-function createMarkup(arr) {
-  return arr
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) =>
-        `<li class="photo-card">
-          <a href="${largeImageURL}" class="link">
-<img src="${webformatURL}" alt="${tags}" height="250" width="350"/></a>
-          <div class="info">
-          <p class="info-item">Likes: <b>${likes}</b></p>
-          <p class="info-item">Views: <b>${views}</b></p>
-          <p class="info-item">Comments: <b>${comments}</b></p>
-          <p class="info-item">Downloads:<b> ${downloads}</b></p>
-          </div>
-
-        </li>`
-    )
-    .join('');
-}
-
 
