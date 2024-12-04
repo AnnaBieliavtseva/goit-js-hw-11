@@ -50,7 +50,14 @@ function onSearchForm(evt) {
         });
       }
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error) 
+      iziToast.error({
+        message:
+          'Sorry, there are some problems with connection. Please reload the page and try again!',
+        position: 'topRight',
+      });
+    })
     .finally(() => { 
       evt.target.elements.searchQuery.value = ''
        loader.classList.add('hidden');
